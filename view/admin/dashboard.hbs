@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Admin Dashboard</h1>
+        <button class="logout-btn" onclick="window.location.href='/admin/logout'">Logout</button>
+    </nav>
+
+    <main class="dashboard-container">
+     <h2>User Management</h2>
+     <div class="table-controls">
+     <button class="add-user-btn" onclick="openAddUserModal()">Add User</button>
+     </div>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each users}}
+                    <tr>
+                        <td>{{@index}}</td>
+                        <td>{{this.email}}</td>
+                        <td>
+                            <button class="edit-btn" onclick="openEditUserModal('{{this._id}}', '{{this.email}}')">Edit</button>
+                            <button class="delete-btn" onclick="deleteUser('{{this._id}}')">Delete</button>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+    </main>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddUserModal()">&times;</span>
+            <h2>Add User</h2>
+            <form id="addUserForm" method="post" action="/admin/add-user">
+             <label for="addEmail">Email:</label>
+                <input type="email" id="addEmail" name="email" required>
+              <label for="addPassword">Password:</label>
+              <input type="password" id="addPassword" name="password" required>
+                <button type="submit" class="modal-btn">Add User</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditUserModal()">&times;</span>
+            <h2>Edit User</h2>
+            <form id="editUserForm" method="post" action="/admin/edit-user">
+                <input type="hidden" id="editUserId" name="id">
+                <label for="editEmail">Email:</label>
+                <input type="email" id="editEmail" name="email" required>
+                <label for="editPassword">New Password:</label>
+                <input type="password" id="editPassword" name="password">
+                <button type="submit" class="modal-btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'block';
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
+        }
+
+        function openEditUserModal(id, email) {
+                        document.getElementById('editUserModal').style.display = 'block';
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editUserEmail').value = email;
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').style.display = 'none';
+        }
+
+        function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user?')) {
+        window.location.href = `/admin/delete-user/${userId}`; 
+    }
+}
+
+    </script>
+</body>
+</html>
+
+
+
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #1845ad;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #ff1a1a;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            padding: 20px;
+        }
+
+        /* Table Styles */
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .user-table th, .user-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .user-table th {
+            background-color: #1845ad;
+            color: white;
+        }
+
+        .user-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Button Styles */
+        .add-user-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .add-user-btn:hover {
+            background-color: #218838;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column; /* Arrange children in a column */
+            gap: 15px; /* Space between elements */
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Input Field Styles */
+        input[type="email"],
+        input[type="password"] {
+            padding: 10px; /* Add padding for comfort */
+            border: 1px solid #ccc; /* Light border for inputs */
+            border-radius: 5px; /* Rounded corners */
+            width: 100%; /* Full width */
+            font-size: 14px; /* Consistent font size */
+        }
+
+        /* Button Styles for Modal */
+        .modal-btn {
+            background-color: #007bff; /* Blue color */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s; /* Added transform for effect */
+            align-self: flex-start; /* Align button to the start */
+        }
+
+        .modal-btn:hover {
+            background-color: #0056b3; /* Darker blue */
+            transform: scale(1.05); /* Slightly enlarge the button on hover */
+        }
+
+        .modal-btn:focus {
+            outline: none; /* Remove default focus outline */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a shadow effect */
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-table {
+                font-size: 14px;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
+
+            .logout-btn, .add-user-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
